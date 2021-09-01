@@ -1,0 +1,62 @@
+{% extends "base.html" %} 
+
+{% block title %} Pay by credit card {% endblock %}
+
+
+
+{% block content %}
+<h1>Pay by credit card</h1>
+
+<!-- includes the Braintree JS client SDK -->
+<script src='https://code.jquery.com/ui/1.11.4/jquery-ui.js'></script>
+<script src="https://js.braintreegateway.com/web/dropin/1.18.0/js/dropin.min.js"></script>
+
+<form autocomplete="off" method="POST">
+  {% if braintree_error %}
+    <div class="alert alert-danger fade in">
+        <button class="close" data-dismiss="alert">&times;</button>
+        {{ braintree_error|safe }}
+    </div>
+  {% endif %}
+  <div class="braintree-notifications"></div>
+  <div id="braintree-dropin"></div>
+  <input style="background-color: #0783ca" id="submit-button" class="btn btn-success btn-lg btn-block" type="button" value="Pay now!" />
+</form>
+{% endblock %}
+
+
+{% block js %}
+  
+
+<script>
+  var braintree_client_token = "{{ client_token}}";
+  var button = document.querySelector('#submit-button');
+
+  braintree.dropin.create({
+    authorization: "{{client_token}}",
+    container: '#braintree-dropin',
+    card: {
+      cardholderName: {
+          required: false
+      }
+    }
+  }, function (createErr, instance) {
+      button.addEventListener('click', function () {
+          instance.requestPaymentMethod(function (err, payload) {
+              $.ajax({
+                  type: 'POST',
+                  url: '{% url "payment:process" %}',
+                  data: {
+                    'paymentMethodNonce': payload.nonce,
+                    'csrfmiddlewaretoken': '{{ csrf_token }}'}
+              }).done(function (result) {
+                 console.log('done')
+              }).err(function(error){
+                  console.log('error')
+              });
+          });
+      });
+  });
+</script>
+
+{% endblock js %}

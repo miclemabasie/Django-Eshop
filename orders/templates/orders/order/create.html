@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <h2>Place an Order</h2>
+        <hr>
+        <form action="" method="post">
+            {% csrf_token %}
+            {{form|crispy}}
+            <div class="pt-4 badge">
+                <a class="btn btn-secondary" href="{% url 'cart:cart_detail' %}">Back to Cart</a>
+                <input class="btn btn-success" type="submit" value="Place Order">
+            </div>
+        </form>
+    </div>
+    <div class="col-md-6">
+        <h2 class="text-warning">Your Cart</h2>
+        <hr>
+        <ul class="ist-group">
+            {% for item in cart %}
+            <li class="list-group-item d-flex justify-content-between align-items-center">
+                {{item.product}} x{{item.quantity}}
+                <span class="badge bg-primary rounded-pill">
+                    {{item.total_price|floatformat:2}}
+                </span>
+            </li>
+            {% endfor %}
+            {% if cart.coupon %}
+            <li class="pt-5 list-group-item d-flex justify-content-between align-items-center">
+                <h5>"{{cart.coupon.code}}" ({{ cart.coupon.discount }}% off)</h5>
+                <span class="badge bg-danger rounded-pill">
+                    ${{cart.get_discount|floatformat:2}}
+                </span>
+            </li>
+            {% endif %}
+            <li class="pt-5 list-group-item d-flex justify-content-between align-items-center">
+                <h5>Total Cost</h5>
+                <span class="badge rounded-pill text-warning">
+                    <h3><strong>{{cart.get_total_price_after_discount}}</strong></h3>
+                </span>
+            </li>
+        </ul>
+
+
+
+    </div>
+</div>
+{% endblock content %}
+

@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+  
+<div class="row py-4 my-4">
+  <div class="col-md-3">
+      <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto link-dark text-decoration-none">
+        <svg class="bi me-2" width="40" height="32"><use xlink:href="#bootstrap"/></svg>
+        <span class="fs-4">Categories</span>
+      </a>
+      <hr>
+      <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item">
+          <a href="{% url 'products:product_list' %}" class="nav-link {% if request.path == '/products/' %} active {% endif %}" aria-current="page">
+            <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+            All
+          </a>
+        </li>
+        {% for c in categories %}
+          
+        <li class="nav-item">
+          <a href="{{c.get_absolute_url}}" class="nav-link {% if category.slug == c.slug %} active {% endif %}" aria-current="page">
+            <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+            {{c.name}}
+          </a>
+        </li>
+        {% endfor %}
+      
+      </ul>
+      <hr>
+    </div>
+
+  <div class="col-md-9" >
+    <h2>Products</h2>
+    <hr>
+  <div class="row g-5">
+        {% for product in products %}
+          
+        <div class="col-md-4">
+          <div class="card shadow-sm">
+          {% if product.image %}
+          <img class="bd-placeholder-img card-img-top" width="100%" height="225" src="{{product.image.url}}">
+          {% else %}
+            <svg class="bd-placeholder-img card-img-top" width="100%" height="225" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Placeholder: Thumbnail" preserveAspectRatio="xMidYMid slice" focusable="false"><title>Placeholder</title><rect width="100%" height="100%" fill="#55595c"/><text x="50%" y="50%" fill="#eceeef" dy=".3em">Thumbnail</text></svg>
+          {%endif%}
+            <div class="card-body">
+              <h5>{{product}}</h5>
+              <p class="card-text">{{product.description|truncatewords:1}}</p>
+              <div class="d-flex justify-content-between align-items-center">
+                <div class="btn-group">
+                  <a class="btn btn-sm btn-outline-success" href="{{product.get_absolute_url}}">View</a>
+                </div>
+                <small class="text-muted">9 mins</small>
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    
+  </div>
+</div>
+{% endblock content %}

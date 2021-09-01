@@ -1,0 +1,1 @@
+celery -A myshop worker -l info
